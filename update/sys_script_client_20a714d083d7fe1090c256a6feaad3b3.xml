@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update sys_domain="global" table="sys_script_client">
+    <sys_script_client action="INSERT_OR_UPDATE">
+        <active>true</active>
+        <applies_extended>false</applies_extended>
+        <condition/>
+        <description>Use the GetEmail Address Script Include to retrieve the Requested for's email address from the database when the Requested for value changes.</description>
+        <field>u_requested_for</field>
+        <global>false</global>
+        <isolate_script>true</isolate_script>
+        <messages/>
+        <name>NeedIt Populate Email Field</name>
+        <order/>
+        <script><![CDATA[function onChange(control, oldValue, newValue, isLoading) {
+    if (isLoading || newValue === '') {
+        g_form.clearValue('u_requested_for_email');
+        return;
+    }
+
+    // 关键：打印请求地址和参数，排查格式问题
+    var restUrl = '/api/x_58872_needit/get_user_email_api/get/' + newValue;
+//	g_form.addInfoMessage('restUrl: '+restUrl);
+    console.log('【请求地址】', restUrl); // 查看控制台输出的地址是否正确
+    console.log('【用户ID参数】', newValue); // 确认newValue是32位sys_id
+
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', restUrl, true);
+    xhr.setRequestHeader('Accept', 'application/json');
+    xhr.setRequestHeader('X-UserToken', g_ck);
+    xhr.withCredentials = true;
+
+    xhr.onload = function() {
+	//	g_form.addInfoMessage('xhr.status: '+xhr.status);
+	//	g_form.addInfoMessage('xhr.responseText: '+xhr.responseText);
+        // console.log('【响应状态码】', xhr.status);
+        // console.log('【响应内容】', xhr.responseText); // 打印服务端返回的错误信息
+        if (xhr.status === 200) {
+            var result = JSON.parse(xhr.responseText);
+		//	g_form.addInfoMessage('result: '+result);
+			// g_form.addInfoMessage('result.email: '+result.result.email);
+             g_form.setValue('u_requested_for_email', result.result.email);
+        } else {
+            g_form.clearValue('u_requested_for_email');
+            console.error('请求失败：', xhr.statusText);
+        }
+    };
+    xhr.onerror = function() {
+        g_form.clearValue('u_requested_for_email');
+        console.error('网络异常');
+    };
+    xhr.send();
+}]]></script>
+        <sys_class_name>sys_script_client</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2026-02-22 02:55:13</sys_created_on>
+        <sys_domain>global</sys_domain>
+        <sys_domain_path>/</sys_domain_path>
+        <sys_id>20a714d083d7fe1090c256a6feaad3b3</sys_id>
+        <sys_mod_count>32</sys_mod_count>
+        <sys_name>NeedIt Populate Email Field</sys_name>
+        <sys_overrides/>
+        <sys_package display_value="NeedIt" source="x_58872_needit">6ead8e780f603200cd674f8ce1050ed1</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="NeedIt">6ead8e780f603200cd674f8ce1050ed1</sys_scope>
+        <sys_update_name>sys_script_client_20a714d083d7fe1090c256a6feaad3b3</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2026-02-22 06:34:01</sys_updated_on>
+        <table>x_58872_needit_needit</table>
+        <type>onChange</type>
+        <ui_type>0</ui_type>
+        <view/>
+    </sys_script_client>
+</record_update>

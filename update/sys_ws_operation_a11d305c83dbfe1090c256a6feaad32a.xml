@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_ws_operation">
+    <sys_ws_operation action="INSERT_OR_UPDATE">
+        <active>true</active>
+        <consumes>application/json,application/xml,text/xml</consumes>
+        <consumes_customized>false</consumes_customized>
+        <default_operation_uri/>
+        <enforce_acl/>
+        <http_method>GET</http_method>
+        <name>Get Email by User ID</name>
+        <operation_script><![CDATA[(function process(/*RESTAPIRequest*/ request, /*RESTAPIResponse*/ response) {
+    try {
+        var userId = request.pathParams.user_id;
+        gs.info('【API请求】用户ID：' + userId);
+		
+
+        // 1. 校验参数是否存在
+        if (!userId) {
+            gs.error('【400错误】用户ID为空');
+            response.setStatus(400); // 明确返回400状态码
+            response.setBody({error: '参数错误：user_id不能为空'});
+            return;
+        }
+
+        // 2. 校验sys_id格式（32位字母数字）
+        var sysIdRegex = /^[0-9a-f]{32}$/i;
+        if (!sysIdRegex.test(userId)) {
+            gs.error('【400错误】用户ID格式非法：' + userId);
+            response.setStatus(400);
+            response.setBody({error: '参数错误：user_id不是合法的sys_id'});
+            return;
+        }
+
+        // 3. 正常查询逻辑
+        var userGR = new GlideRecord('sys_user');
+        if (userGR.get(userId)) {
+            response.setBody({email: userGR.email.toString() || ''});
+        } else {
+            response.setBody({email: ''});
+        }
+    } catch (e) {
+        gs.error('【API异常】' + e.message);
+        response.setStatus(500);
+        response.setBody({error: '服务器内部错误'});
+    }
+})(request, response);]]></operation_script>
+        <operation_uri>/api/x_58872_needit/get_user_email_api/get/{user_id}</operation_uri>
+        <produces>application/json,application/xml,text/xml</produces>
+        <produces_customized>false</produces_customized>
+        <relative_path>/get/{user_id}</relative_path>
+        <request_example/>
+        <requires_acl_authorization>false</requires_acl_authorization>
+        <requires_authentication>true</requires_authentication>
+        <requires_snc_internal_role>true</requires_snc_internal_role>
+        <short_description/>
+        <sys_class_name>sys_ws_operation</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2026-02-22 05:31:28</sys_created_on>
+        <sys_id>a11d305c83dbfe1090c256a6feaad32a</sys_id>
+        <sys_mod_count>4</sys_mod_count>
+        <sys_name>Get Email by User ID</sys_name>
+        <sys_package display_value="NeedIt" source="x_58872_needit">6ead8e780f603200cd674f8ce1050ed1</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="NeedIt">6ead8e780f603200cd674f8ce1050ed1</sys_scope>
+        <sys_update_name>sys_ws_operation_a11d305c83dbfe1090c256a6feaad32a</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2026-02-22 06:12:23</sys_updated_on>
+        <web_service_definition display_value="Get User Email API">865fec50839bfe1090c256a6feaad361</web_service_definition>
+        <web_service_version/>
+    </sys_ws_operation>
+    <sys_es_latest_script action="INSERT_OR_UPDATE">
+        <id>a11d305c83dbfe1090c256a6feaad32a</id>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2026-02-22 05:31:27</sys_created_on>
+        <sys_id>264d305c83dbfe1090c256a6feaad39d</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2026-02-22 05:31:27</sys_updated_on>
+        <table>sys_ws_operation</table>
+        <use_es_latest>true</use_es_latest>
+    </sys_es_latest_script>
+</record_update>
